@@ -29,7 +29,7 @@ export async function createOrResumeSession({
       .limit(1);
 
     if (existing) {
-      return { data: { threadId: existing.threadId } };
+      return { data: { threadId: existing.threadId, isNew: false } };
     }
   } else {
     await db
@@ -51,5 +51,5 @@ export async function createOrResumeSession({
     .values({ userId, problemId, threadId, status: "active" })
     .returning({ threadId: sessionsTable.threadId });
 
-  return { data: { threadId: created!.threadId } };
+  return { data: { threadId: created!.threadId, isNew: true } };
 }
