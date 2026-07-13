@@ -3,8 +3,8 @@ import { z } from "zod";
 export const problemListItemSchema = z.object({
   id: z.string(),
   title: z.string(),
-  difficulty: z.string(),
-  tags: z.string(),
+  difficulty: z.enum(["Easy", "Medium", "Hard"]),
+  tags: z.array(z.string()),
 });
 
 export const listProblemsResponseSchema = z.object({
@@ -21,10 +21,16 @@ export type ListProblemsResponse = z.infer<typeof listProblemsResponseSchema>;
 export const problemDetailSchema = z.object({
   id: z.string(),
   title: z.string(),
-  difficulty: z.string(),
+  difficulty: z.enum(["Easy", "Medium", "Hard"]),
   tags: z.array(z.string()),
   description: z.string(),
-  examples: z.unknown(),
+  examples: z.array(
+    z.object({
+      input: z.string(),
+      output: z.string(),
+      explanation: z.string().optional(),
+    })
+  ),
   constraints: z.array(z.string()),
 });
 

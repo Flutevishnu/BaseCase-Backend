@@ -18,7 +18,7 @@ export const problemsTable = pgTable("problems", {
   description: varchar({ length: 255 }).notNull(),
   difficulty: text({ enum: ["Easy", "Medium", "Hard"] }).notNull(),
   tags: text().array().notNull(),
-  examples: jsonb().notNull(),
+  examples: jsonb().$type<{ input: string, output: string, explanation?: string }>().notNull().array().notNull(),
   constraints: text().array().notNull(),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

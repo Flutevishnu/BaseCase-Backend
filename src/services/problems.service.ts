@@ -48,7 +48,7 @@ export async function listProblems(
       id: String(problem.id),
       title: problem.title,
       difficulty: problem.difficulty,
-      tags: problem.tags.join(","),
+      tags: problem.tags,
     })),
     meta: {
       total: String(total),
@@ -86,7 +86,11 @@ export async function getProblemById(
       difficulty: problem.difficulty,
       tags: problem.tags,
       description: problem.description,
-      examples: problem.examples,
+      examples: problem.examples as {
+        input: string;
+        output: string;
+        explanation?: string;
+      }[],
       constraints: problem.constraints,
     },
   };
