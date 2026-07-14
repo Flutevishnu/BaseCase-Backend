@@ -1,10 +1,11 @@
 import { eq } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { usersTable } from "../db/schema.js";
-import type { CreateUserInput } from "../schemas/request/user.js";
+import type { CreateUserInput, UpdateUserInput } from "../schemas/request/user.js";
 import type {
   CreateUserResponse,
   UserIdResponse,
+  UpdateUserResponse
 } from "../schemas/response/user.js";
 
 export async function createUser(
@@ -17,6 +18,19 @@ export async function createUser(
     .returning({ id: usersTable.id });
 
   return { success: inserted.length > 0 };
+}
+
+export async function updateUser(
+  clerkUserId: string,
+  input: UpdateUserInput
+): Promise<UpdateUserResponse> {
+  const updated = await db
+    .update(usersTable)
+    .set(input)
+    .where(eq(usersTable.clerkUserId, clerkUserId))
+    .returning({ id: usersTable.id });
+
+  return { success: updated.length > 0 };
 }
 
 export async function findUserIdByClerkId(

@@ -4,6 +4,7 @@ import { healthRouter } from "./routes/health.js";
 import { v1Router } from "./routes/index.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { logger } from "./lib/logger.js";
+import { webhooksRouter } from "./routes/webhooks.js";
 
 export function createApp() {
   const app = express();
@@ -14,6 +15,8 @@ export function createApp() {
       redact: ["req.headers.authorization", "req.headers.cookie"],
     }),
   );
+
+  app.use("/api/webhooks", webhooksRouter);
 
   app.use(express.json());
 

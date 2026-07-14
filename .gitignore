@@ -28,3 +28,5 @@ coverage/
 # IDE (optional local settings)
 .vscode/
 .idea/
+
+scripts/

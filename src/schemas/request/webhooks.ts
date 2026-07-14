@@ -22,7 +22,7 @@ export const langgraphWebhookSchema = z.object({
   status: z.string(),
   values: z.object({
     session_summary: sessionSummarySchema.optional(),
-  }).passthrough().optional(),
-}).passthrough();
+  }).loose().optional(),
+}).loose();
 
 export type LanggraphWebhookBody = z.infer<typeof langgraphWebhookSchema>;

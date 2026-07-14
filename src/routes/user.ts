@@ -3,12 +3,15 @@ import { validate } from "../middleware/validate.js";
 import {
   createUserSchema,
   getUserParamsSchema,
+  UserUpdateSchema,
   type CreateUserInput,
   type GetUserParams,
+  type UpdateUserInput
 } from "../schemas/request/user.js";
 import {
   createUserResponseSchema,
   userIdResponseSchema,
+  updateUserResponseSchema
 } from "../schemas/response/user.js";
 import * as userService from "../services/user.service.js";
 
@@ -34,6 +37,27 @@ userRouter.post(
     }
   },
 );
+
+userRouter.patch(
+  "/:clerkUserId",
+  validate({ params: getUserParamsSchema, body: UserUpdateSchema }),
+  async (req, res, next) => {
+    try {
+      const { clerkUserId } = req.validated.params as GetUserParams;
+      const result = await userService.updateUser(clerkUserId, req.validated.body as UpdateUserInput);
+
+      if (!result.success) {
+        res.status(409).json(updateUserResponseSchema.parse(result));
+        return;
+      }
+
+      res.status(200).json(updateUserResponseSchema.parse(result));
+    }
+    catch (error) {
+      next(error);
+    }
+  }
+)
 
 userRouter.get(
   "/:clerkUserId",
