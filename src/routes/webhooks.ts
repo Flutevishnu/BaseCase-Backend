@@ -1,4 +1,4 @@
-﻿import { Router, raw } from "express";
+import express, { Router, raw } from "express";
 import { langgraphWebhookSchema } from "../schemas/request/webhooks.js";
 import { processSessionSummary } from "../services/webhooks.service.js";
 import { Webhook } from "svix";
@@ -6,7 +6,7 @@ import { createUser } from "../services/user.service.js";
 
 export const webhooksRouter = Router();
 
-webhooksRouter.post("/evaluations", async (req, res) => {
+webhooksRouter.post("/evaluations", express.json(), async (req, res) => {
   try {
     const payload = langgraphWebhookSchema.parse(req.body);
 
