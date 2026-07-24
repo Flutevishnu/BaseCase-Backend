@@ -7,7 +7,6 @@ export const createSessionParamsSchema = z.object({
 export type CreateSessionParams = z.infer<typeof createSessionParamsSchema>;
 
 export const createSessionBodySchema = z.object({
-  clerkUserId: z.string().trim().min(1).max(255),
   restart: z.boolean().optional().default(false),
 });
 

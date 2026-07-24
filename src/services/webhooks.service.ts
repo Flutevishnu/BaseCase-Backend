@@ -1,10 +1,11 @@
-﻿import { eq, sql } from "drizzle-orm";
+import { eq, sql, and, desc } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { sessionsTable, userConceptMasteryTable, usersTable } from "../db/schema.js";
 import type { LanggraphWebhookBody } from "../schemas/request/webhooks.js";
+import { getLatestPendingSubmission, updateSubmissionStatus } from "./submissions.service.js";
 
 export async function processSessionSummary(payload: LanggraphWebhookBody) {
-  const [session] = await db.select({ userId: sessionsTable.userId })
+  const [session] = await db.select({ id: sessionsTable.id, userId: sessionsTable.userId })
     .from(sessionsTable)
     .where(eq(sessionsTable.threadId, payload.thread_id));
 
@@ -14,6 +15,26 @@ export async function processSessionSummary(payload: LanggraphWebhookBody) {
 
   const userId = session.userId;
   const summary = payload.values?.session_summary;
+  const review = payload.values?.review;
+
+  // 1. Update the latest pending submission and complete session
+  if (review) {
+    const latestSubmission = await getLatestPendingSubmission(session.id);
+    
+    if (latestSubmission) {
+      await updateSubmissionStatus(latestSubmission.id, "completed", review);
+    }
+
+    await db.update(sessionsTable)
+      .set({ status: "completed", completedAt: new Date(), updatedAt: new Date() })
+      .where(eq(sessionsTable.id, session.id));
+  } else if (payload.values?.current_phase === "CODING") {
+    // If the phase is CODING and there's no review, it means the code was rejected by the AI
+    const latestSubmission = await getLatestPendingSubmission(session.id);
+    if (latestSubmission) {
+      await updateSubmissionStatus(latestSubmission.id, "rejected");
+    }
+  }
 
   if (!summary) return;
 

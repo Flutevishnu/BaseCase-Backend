@@ -30,7 +30,7 @@ export const sessionsTable = pgTable("sessions", {
   problemId: integer().references(() => problemsTable.id).notNull(),
   threadId: uuid().notNull(),
   code: text(),
-  status: text({ enum: ["active", "completed", "archived"] }).notNull().default("active"),
+  status: text({ enum: ["active", "completed", "archived", "failed"] }).notNull().default("active"),
   startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   completedAt: timestamp({ withTimezone: true }),
   createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
@@ -55,3 +55,13 @@ export const userConceptMasteryTable = pgTable("user_concept_mastery", {
 }, (t) => ({
   unq: unique().on(t.userId, t.concept),
 }));
+
+export const submissionsTable = pgTable("submissions", {
+  id: uuid().primaryKey().defaultRandom(),
+  sessionId: uuid("session_id").references(() => sessionsTable.id).notNull(),
+  code: text().notNull(),
+  status: text({ enum: ["pending", "completed", "failed", "rejected"] }).notNull().default("pending"),
+  review: jsonb(),
+  createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
+});
