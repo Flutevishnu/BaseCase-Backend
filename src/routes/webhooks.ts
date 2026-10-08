@@ -9,7 +9,10 @@ webhooksRouter.post("/evaluations", express.json(), async (req, res) => {
   try {
     const payload = langgraphWebhookSchema.parse(req.body);
 
-    if (payload.status === "success" && payload.values && payload.values.session_summary) {
+    // Don't require session_summary here: rejected submissions (phase CODING, no review)
+    // and accepted ones whose extraction failed (review, no summary) carry none.
+    // processSessionSummary skips the memory updates when it's absent.
+    if (payload.status === "success" && payload.values) {
       await processSessionSummary(payload);
     }
 
