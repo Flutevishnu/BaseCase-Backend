@@ -15,7 +15,7 @@ export const usersTable = pgTable("users", {
 export const problemsTable = pgTable("problems", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   title: varchar({ length: 255 }).notNull(),
-  description: varchar({ length: 255 }).notNull(),
+  description: text().notNull(),
   difficulty: text({ enum: ["Easy", "Medium", "Hard"] }).notNull(),
   tags: text().array().notNull(),
   examples: jsonb().$type<{ input: string, output: string, explanation?: string }>().notNull().array().notNull(),
